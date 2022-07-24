@@ -1,7 +1,7 @@
 build:
-	go build ./cmd/gen-rand-dict
-	go build ./cmd/reader-selector
-	go build ./cmd/reader-selector-inline
+	go build -o bin/gen-rand-dict ./cmd/gen-rand-dict
+	go build -o bin/reader-selector ./cmd/reader-selector 
+	go build -o bin/reader-selector-inline ./cmd/reader-selector-inline
 
 clean-data:
 	-rm -rf testdata

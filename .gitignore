@@ -15,6 +15,4 @@
 # vendor/
 
 testdata/
-gen-rand-dict
-reader-selector
-reader-selector-inline
+bin/
