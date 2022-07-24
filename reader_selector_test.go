@@ -1,0 +1,127 @@
+package gostreambench_test
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"math/rand"
+	"strings"
+	"testing"
+
+	gostreambench "github.com/nikolaydubina/go-bench-stream"
+)
+
+func ExampleReaderSelector() {
+	const sColorsOK = `
+red
+green
+red
+brown
+yellow
+brown
+purple
+red
+`
+
+	var p io.Reader = strings.NewReader(sColorsOK)
+	p = gostreambench.NewReaderSelector(p, map[string]bool{"red": true, "green": true, "brown": true})
+	p = gostreambench.NewReaderSelector(p, map[string]bool{"red": true, "green": true})
+
+	b, err := io.ReadAll(p)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	fmt.Print(string(b))
+	// Output:
+	// red
+	// green
+	// red
+	// red
+}
+
+var dict = []string{
+	"red",
+	"green",
+	"blue",
+	"purple",
+	"brown",
+}
+
+func benchReaderSelector(b *testing.B, n int) {
+	var s string
+
+	for i := 0; i < n; i++ {
+		s += dict[rand.Intn(len(dict))] + "\n"
+	}
+
+	var o []byte
+	var err error
+
+	b.ResetTimer()
+
+	for n := 0; n < b.N; n++ {
+
+		var p io.Reader = strings.NewReader(s)
+		p = gostreambench.NewReaderSelector(p, map[string]bool{"red": true, "green": true, "brown": true})
+		p = gostreambench.NewReaderSelector(p, map[string]bool{"red": true, "green": true})
+
+		o, err = io.ReadAll(p)
+		if err != nil {
+			b.Error(err)
+		}
+		if len(o) == 0 {
+			b.Error("empty output")
+		}
+	}
+}
+
+func BenchmarkReaderSelector(b *testing.B) {
+	for _, q := range []int{100, 1000, 10000, 100000} {
+		b.Run(fmt.Sprintf("n=%d", q), func(b *testing.B) {
+			benchReaderSelector(b, q)
+		})
+	}
+}
+
+func benchReaderSelectorChain(b *testing.B, n int, l int) {
+	var s string
+
+	for i := 0; i < n; i++ {
+		s += dict[rand.Intn(len(dict))] + "\n"
+	}
+
+	f := map[string]bool{"red": true, "green": true, "brown": true}
+
+	var o []byte
+	var err error
+
+	b.ResetTimer()
+
+	for n := 0; n < b.N; n++ {
+
+		var p io.Reader = strings.NewReader(s)
+
+		for j := 0; j < l; j++ {
+			p = gostreambench.NewReaderSelector(p, f)
+		}
+
+		o, err = io.ReadAll(p)
+		if err != nil {
+			b.Error(err)
+		}
+		if len(o) == 0 {
+			b.Error("empty output")
+		}
+	}
+}
+
+func BenchmarkReaderSelector_Chain(b *testing.B) {
+	for _, l := range []int{2, 4, 8, 16, 32, 64, 128, 256} {
+		for _, n := range []int{100, 1000, 10000, 100000} {
+			b.Run(fmt.Sprintf("l=%d_n=%d", l, n), func(b *testing.B) {
+				benchReaderSelectorChain(b, n, l)
+			})
+		}
+	}
+}
