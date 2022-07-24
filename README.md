@@ -1,6 +1,8 @@
-## Go Benchmarks for Stream Processing
+## 🌊 Go Benchmarks for Stream Processing
 
-Is it efficient to chain `io.Readers` in Go? How efficient it is compared to UNIX pipes? How efficient would be iterator?
+_Is it efficient to chain `io.Readers` in Go?_  
+_How efficient it is compared to UNIX pipes?_  
+_How efficient would be iterator?_  
 
 ## Tested Scenarios
 
