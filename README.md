@@ -28,7 +28,7 @@ This steam processor wraps iterate calls. It performs reading and writing of byt
 * 4x less mallocs than `io.Reader` version
 * time is 10% faster tha `io.Reader` version
 * time per processor composition is slightly cheaper
-* for this problem of filtering strings, it is generally same as io.Reader. For more complex usecases it may show greated benefits.
+* for this problem of filtering strings, it is generally same as `io.Reader`. For more complex usecases it may show greated benefits.
 
 ### Benchmarks UNIX Pipe
 
