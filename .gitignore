@@ -15,7 +15,6 @@
 # vendor/
 
 testdata/
-docs/
 gen-rand-dict
 reader-selector
 reader-selector-inline
