@@ -19,6 +19,8 @@ This stream processor wraps `bufio.Scanner` and writes `[]byte` to destination. 
 * chaining readers has linear processing time
 * chaining readers in Go has faster user cpu time (7s) then via UNIX pipe (11.1 + 4.7 = 15.8s)
 
+![](./docs/go-bench-stream_reader_2.svg)
+
 `IteratorSelector`
 
 This steam processor wraps iterate calls. It performs reading and writing of bytes only once. Data is passed through function calls. Parsing and Printing is also minimized, since already parsed data structures are passed in chain of iterators. Data passed in iterator chain is either small enough to be on stack or pointers to same bytes buffer. This make it more efficient to chain many processors.
@@ -29,6 +31,12 @@ This steam processor wraps iterate calls. It performs reading and writing of byt
 * time is 10% faster tha `io.Reader` version
 * time per processor composition is slightly cheaper
 * for this problem of filtering strings, it is generally same as `io.Reader`. For more complex usecases it may show greated benefits.
+
+![](./docs/go-bench-stream_reader_3.svg)
+
+`Reader -> functions -> Reader`
+
+If each iterator just calls `Next` and there is no batching or utilizing multiple elements at once, then can just wrap as functions calls. No need for Iterator interface. Data can be passed through functions. Benchmarks and Examples for this is area of further research.
 
 ### Benchmarks UNIX Pipe
 
